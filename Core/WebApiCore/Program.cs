@@ -111,7 +111,8 @@ builder.Services.AddScoped<IVideosFromCourseId, VideosFromCourseId>();
 builder.Services.AddScoped<ICourseGet, CourseGet>();
 builder.Services.AddScoped<ICourseUpdate, CourseUpdate>();
 builder.Services.AddScoped<ICourseDelete, CourseDelete>();
-
+builder.Services.AddScoped<ICourseUpdateImage, CourseUpdateImage>();
+builder.Services.AddScoped<IVideoDelete, VideoDelete>();
 
 
 

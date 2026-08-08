@@ -14,5 +14,7 @@ namespace InfrastructureCore.Persistence.Course
         Task UpdateByIdAsync(Guid courseId, string title, string description, bool state, Guid userId, CancellationToken cancellationToken);
         Task<CourseDto> GetByIdAsync(Guid courseId, Guid userId, CancellationToken cancellationToken);
 
+        Task UpdateImageByIdAsync(Guid courseId, Guid userId, Stream stream, string fileName, CancellationToken cancellationToken);
+
     }
 }

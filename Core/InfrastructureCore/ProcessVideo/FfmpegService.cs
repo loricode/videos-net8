@@ -12,10 +12,8 @@ namespace InfrastructureCore.ProcessVideo
             _options = options.Value;
         }
 
-        public async Task GenerateHslAsync(string inputPath, string outputPath, CancellationToken cancellationToken = default)
+        public async Task GenerateHslAsync(string inputPath, string outputFolder, CancellationToken cancellationToken = default)
         {
-            var outputFolder = Path.Combine(outputPath);
-            Directory.CreateDirectory(outputFolder);
             
             var arguments = $"-i \"{inputPath}\" " + "-hls_time 6 " + "-hls_playlist_type vod " + "-hls_segment_filename \"segment_%03d.ts\" " + "\"playlist.m3u8\"";
        

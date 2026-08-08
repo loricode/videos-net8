@@ -11,8 +11,8 @@ namespace InfrastructureCore.LocalStorage
     {
         Task<FolderOption> SaveAsync(Stream stream, string fileName, Guid courseId, Guid videoId, CancellationToken cancellationToken);
         Task<string> SaveImageAsync(Stream stream, string fileName, Guid identification, CancellationToken cancellationToken);
-
         Task DeleteCourseAsync(Guid courseId);
+        Task UpdateImageAsync(Stream stream, string fileName, Guid identification, CancellationToken cancellationToken);
 
     }
 }

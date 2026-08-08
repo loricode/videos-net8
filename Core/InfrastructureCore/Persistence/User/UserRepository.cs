@@ -3,14 +3,7 @@ using DomainCore.Exceptions;
 using InfrastructureCore.JWT;
 using InfrastructureCore.Persistence.EF;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.IdentityModel.Tokens;
-using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.IdentityModel.Tokens.Jwt;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+
 
 namespace InfrastructureCore.Persistence.User
 {

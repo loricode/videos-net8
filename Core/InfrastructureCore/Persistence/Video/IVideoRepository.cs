@@ -11,5 +11,7 @@ namespace InfrastructureCore.Persistence.Video
 
         Task<VideoDetailDto> FromCourseIdAsync(Guid courseId, CancellationToken cancellationToken);
 
+        Task DeleteByIdAsync(Guid courseId, Guid videoId, Guid userId, CancellationToken cancellationToken);
+
     }
 }

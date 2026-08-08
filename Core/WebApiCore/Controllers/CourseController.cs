@@ -21,8 +21,11 @@ namespace WebApiCore.Controllers
         private readonly ICourseDelete _courseDelete;
 
         private readonly ICourseGet _courseGet;
+
+        private readonly ICourseUpdateImage _courseUpdateImage;
         public CourseController(ICourseCreate courseCreate, ICourseByUserId courseByUserId, ICourseSearch 
-            courseSearch, ICourseUpdate courseUpdate, ICourseDelete courseDelete, ICourseGet courseGet) 
+            courseSearch, ICourseUpdate courseUpdate, 
+            ICourseDelete courseDelete, ICourseGet courseGet, ICourseUpdateImage courseUpdateImage) 
         { 
             _courseCreate = courseCreate;
             _courseByUserId = courseByUserId;
@@ -30,6 +33,7 @@ namespace WebApiCore.Controllers
             _courseUpdate = courseUpdate;
             _courseDelete = courseDelete;
             _courseGet = courseGet; 
+            _courseUpdateImage = courseUpdateImage;
         }
 
         [HttpPost("Create")]
@@ -64,6 +68,13 @@ namespace WebApiCore.Controllers
         public async Task<IEnumerable<CourseDto>> ByUserId(Guid userId, CancellationToken cancellationToken)
         {
             return await _courseByUserId.ByUserIdAsync(userId, cancellationToken);
+        }
+
+        [HttpPut("UpdateImage")]
+        public Task UpdateImage([FromForm] Guid courseId, [FromForm] IFormFile file,
+        [FromForm] Guid userId, CancellationToken cancellationToken)
+        {
+            return _courseUpdateImage.UpdateImageByIdAsync(courseId, userId, file.OpenReadStream(), file.FileName, cancellationToken);
         }
 
         [HttpGet("Search")]

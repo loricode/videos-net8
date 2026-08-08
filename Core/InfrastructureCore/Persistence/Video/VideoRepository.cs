@@ -1,5 +1,6 @@
 ﻿using DomainCore.DTOs.Course;
 using DomainCore.DTOs.Video;
+using DomainCore.Exceptions;
 using InfrastructureCore.LocalStorage;
 using InfrastructureCore.Persistence.EF;
 using InfrastructureCore.Persistence.EF.Entities;
@@ -64,6 +65,22 @@ namespace InfrastructureCore.Persistence.Video
               }).ToListAsync(cancellationToken);
 
             return result;
+        }
+
+        public async Task DeleteByIdAsync(Guid courseId, Guid videoId, Guid userId, CancellationToken cancellationToken)
+        {
+
+            var courseExists = await _context.Courses
+            .AnyAsync(c => c.Id == courseId && c.UserId == userId, cancellationToken);
+
+            if (!courseExists)
+            {
+                throw new NotFoundException("El curso no existe o no pertenece al usuario.");
+            }
+
+            await _context.Videos.Where(c => c.Id == videoId && c.CourseId == courseId)
+                 .ExecuteDeleteAsync(cancellationToken);
+
         }
 
         public async Task<VideoDetailDto> FromCourseIdAsync(Guid courseId, CancellationToken cancellationToken)

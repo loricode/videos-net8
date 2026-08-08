@@ -22,7 +22,7 @@ namespace InfrastructureCore.LocalStorage
 
             Directory.CreateDirectory(folder);
 
-            var path = Path.Combine(folder, $"{fileName}");
+            var path = Path.Combine(folder, $"{fileName.Trim()}");
             
             await using var fileStream = File.Create(path);
 
@@ -47,6 +47,30 @@ namespace InfrastructureCore.LocalStorage
             await stream.CopyToAsync(fileStream, cancellationToken);
 
             return path;
+        }
+
+        public async Task UpdateImageAsync(
+    Stream stream,
+    string fileName,
+    Guid identification,
+    CancellationToken cancellationToken)
+        {
+            var folder = Path.Combine(_options.PathVideos, "images", identification.ToString());
+
+            Directory.CreateDirectory(folder);
+
+            // Eliminar todas las imágenes anteriores
+            foreach (var file in Directory.GetFiles(folder))
+            {
+                File.Delete(file);
+            }
+
+            var path = Path.Combine(folder, fileName);
+
+            await using var fileStream = File.Create(path);
+            await stream.CopyToAsync(fileStream, cancellationToken);
+
+           
         }
 
         public Task DeleteCourseAsync(Guid courseId)

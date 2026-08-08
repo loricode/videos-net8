@@ -99,7 +99,7 @@ namespace WebApiCore.Middleware
 
             var result = JsonSerializer.Serialize(new
             {
-                error = "Error interno del servidor"
+                error = "Error interno del servidor" + ex.Message
             });
 
             await context.Response.WriteAsync(result);

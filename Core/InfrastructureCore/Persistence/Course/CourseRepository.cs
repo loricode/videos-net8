@@ -45,6 +45,19 @@ namespace InfrastructureCore.Persistence.Course
             }
         }
 
+        public async Task UpdateImageByIdAsync(Guid courseId, Guid userId, Stream stream, string fileName, CancellationToken cancellationToken)
+        {
+            var found = await _context.Courses.Where(c => c.UserId == userId && c.Id == courseId)
+                 .FirstOrDefaultAsync(cancellationToken) ?? throw new NotFoundException("No existe el curso.");
+            
+            await _storageService.UpdateImageAsync(stream, fileName, courseId, cancellationToken);
+
+            found.ImgUrl = $"/images/{found.Id}/{fileName.Trim()}";
+
+            await _context.SaveChangesAsync(cancellationToken);
+
+        }
+        
         public async Task<CourseDto> GetByIdAsync(Guid courseId, Guid userId, CancellationToken cancellationToken)
         {
             var result = await _context.Courses.Where(c => c.UserId == userId && c.Id == courseId)

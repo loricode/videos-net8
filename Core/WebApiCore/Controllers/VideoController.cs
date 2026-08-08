@@ -1,5 +1,4 @@
 ﻿using ApplicationCore.Interfaces.Video;
-using DomainCore.DTOs.Course;
 using DomainCore.DTOs.Video;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -17,11 +16,16 @@ namespace WebApiCore.Controllers
 
         private readonly IVideosFromCourseId _videosFromCourseId;
 
-        public VideoController(IUploadVideo uploadVideo, IVideoByCourseId videoByCourseId, IVideosFromCourseId videosFromCourseId) 
+        private readonly IVideoDelete _videoDelete;
+
+        public VideoController(IUploadVideo uploadVideo,
+            IVideoByCourseId videoByCourseId,
+            IVideosFromCourseId videosFromCourseId, IVideoDelete videoDelete) 
         {
            _uploadVideo = uploadVideo;
            _videoByCourseId = videoByCourseId;
            _videosFromCourseId = videosFromCourseId;
+           _videoDelete = videoDelete;
         }
 
         [HttpPost("Upload")]
@@ -39,9 +43,15 @@ namespace WebApiCore.Controllers
 
         [HttpGet("ListByCourseId")]
         [AllowAnonymous]
-        public async Task<VideoDetailDto> ListByCourseId([FromQuery] Guid parameter, CancellationToken cancellationToken)
+        public async Task<ActionResult<VideoDetailDto>> ListByCourseId([FromQuery] Guid parameter, CancellationToken cancellationToken)
         {
             return await _videosFromCourseId.FromCourseIdAsync(parameter, cancellationToken);
+        }
+
+        [HttpDelete("Delete")]
+        public Task DeleteById([FromQuery] Guid courseId, [FromQuery] Guid videoId, [FromQuery] Guid userId, CancellationToken cancellationToken)
+        {
+            return _videoDelete.DeleteByIdAsync(courseId, videoId, userId, cancellationToken);
         }
 
     }
