@@ -21,7 +21,14 @@ namespace ApplicationCore.Validators.User
                 .NotEmpty()
                 .WithMessage("La contraseña es obligatoria")
                 .MinimumLength(8)
-                .WithMessage("La contraseña debe tener mínimo 8 caracteres");
+                .WithMessage("La contraseña debe tener mínimo 8 caracteres")
+                .Matches("[A-Z]").WithMessage("La contraseña debe tener al menos una mayúscula")
+                .Matches("[0-9]").WithMessage("La contraseña debe tener al menos un número")
+                .Matches("[^a-zA-Z0-9]").WithMessage("La contraseña debe tener al menos un símbolo");
+
+            RuleFor(x => x.FullName)
+                .MaximumLength(120)
+                .WithMessage("El nombre admite máximo 120 caracteres");
         }
     }
 }

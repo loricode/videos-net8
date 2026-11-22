@@ -16,12 +16,12 @@ namespace ApplicationCore.Commands.User
             _validator = validator;
         }
 
-        public async Task<UserDto> CreateUser(UserData data)
+        public async Task<UserDto> CreateUser(UserData data, string role)
         {
 
             await _validator.ValidateAndThrowAsync(data);
 
-            return await _userRepo.CreateUser(data.Email, data.FullName, data.Password);
+            return await _userRepo.CreateUser(data.Email, data.FullName, data.Password, role);
 
         }
 

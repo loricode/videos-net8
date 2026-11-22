@@ -9,7 +9,8 @@ namespace InfrastructureCore.Persistence.EF
     {
 
         public DbSet<VideoEntity> Videos { get; set; } 
-        public DbSet<CourseEntity> Courses { get; set; }  
+        public DbSet<CourseEntity> Courses { get; set; }
+        public DbSet<VideoProgressEntity> VideoProgress { get; set; }
         public AppDbContext(DbContextOptions<AppDbContext> options)
             : base(options)
         {
@@ -39,6 +40,27 @@ namespace InfrastructureCore.Persistence.EF
 
                 entity.Property(x => x.Id).ValueGeneratedOnAdd();
 
+                entity.Property(x => x.Status).HasMaxLength(20);
+
+                entity.HasIndex(x => x.Status);
+
+            });
+
+            builder.Entity<VideoProgressEntity>(entity =>
+            {
+                entity.ToTable("VideoProgress");
+
+                entity.HasKey(x => new { x.UserId, x.VideoId });
+
+                entity.HasOne(x => x.Video)
+                    .WithMany()
+                    .HasForeignKey(x => x.VideoId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                entity.HasOne(x => x.User)
+                    .WithMany()
+                    .HasForeignKey(x => x.UserId)
+                    .OnDelete(DeleteBehavior.Cascade);
             });
 
             builder.Entity<CourseEntity>(entity =>

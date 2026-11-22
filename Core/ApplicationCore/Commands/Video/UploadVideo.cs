@@ -13,9 +13,9 @@ namespace ApplicationCore.Commands.Video
             _videoRepository = videoRepository;
         }
 
-        public async Task<Guid> UploadAsync(Stream stream, string fileName, string title, string description, Guid courseId, CancellationToken cancellationToken)
+        public async Task<Guid> UploadAsync(Stream stream, string fileName, string title, string description, Guid courseId, Guid userId, CancellationToken cancellationToken)
         {
-            return await _videoRepository.AddAsync(stream, fileName, title, description, courseId, cancellationToken);
+            return await _videoRepository.AddAsync(stream, fileName, title, description, courseId, userId, cancellationToken);
         }
     }
 }

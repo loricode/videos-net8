@@ -12,5 +12,7 @@ namespace DomainCore.DTOs.Course
 
         public bool State {  get; set; }
 
+        public string? ImgUrl { get; set; }
+
     }
 }

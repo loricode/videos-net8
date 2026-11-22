@@ -9,9 +9,14 @@ namespace WebApiCore.Middleware
     {
         private readonly RequestDelegate _next;
 
-        public ExceptionMiddleware(RequestDelegate next)
+        private readonly IHostEnvironment _env;
+        private readonly ILogger<ExceptionMiddleware> _logger;
+
+        public ExceptionMiddleware(RequestDelegate next, IHostEnvironment env, ILogger<ExceptionMiddleware> logger)
         {
             _next = next;
+            _env = env;
+            _logger = logger;
         }
 
         public async Task Invoke(HttpContext context)
@@ -41,10 +46,24 @@ namespace WebApiCore.Middleware
             }
             catch (NotFoundException ex)
             {
-                await HandleException(
-                       context,
-                       StatusCodes.Status400BadRequest,
-                       ex.Message);
+                await HandleException(context, StatusCodes.Status404NotFound, ex.Message);
+            }
+            catch (ForbiddenException ex)
+            {
+                await HandleException(context, StatusCodes.Status403Forbidden, ex.Message);
+            }
+            catch (UnauthorizedAccessException ex)
+            {
+                await HandleException(context, StatusCodes.Status401Unauthorized, ex.Message);
+            }
+            catch (OperationCanceledException) when (context.RequestAborted.IsCancellationRequested)
+            {
+                // el cliente cerró la conexión (p. ej. canceló una subida)
+            }
+            catch (BadHttpRequestException ex)
+            {
+                await HandleException(context, ex.StatusCode, ex.StatusCode == 413
+                    ? "El archivo supera el tamaño permitido." : "Solicitud inválida.");
             }
             catch (ValidationException ex)
             {
@@ -67,6 +86,8 @@ namespace WebApiCore.Middleware
 
             var result = JsonSerializer.Serialize(new
             {
+                status = 400,
+                message = errors.FirstOrDefault() ?? "Datos inválidos.",
                 errors
             });
 
@@ -92,17 +113,16 @@ namespace WebApiCore.Middleware
             await context.Response.WriteAsync(JsonSerializer.Serialize(response));
         }
 
-        private static async Task HandleGenericException(HttpContext context, Exception ex)
+        private async Task HandleGenericException(HttpContext context, Exception ex)
         {
+            _logger.LogError(ex, "Error no controlado en {Path}", context.Request.Path);
+
             context.Response.StatusCode = (int)HttpStatusCode.InternalServerError;
             context.Response.ContentType = "application/json";
 
-            var result = JsonSerializer.Serialize(new
-            {
-                error = "Error interno del servidor" + ex.Message
-            });
-
-            await context.Response.WriteAsync(result);
+            // En producción no se exponen detalles internos
+            var message = _env.IsDevelopment() ? $"Error interno del servidor: {ex.Message}" : "Error interno del servidor.";
+            await context.Response.WriteAsync(JsonSerializer.Serialize(new { status = 500, message }));
         }
 
     }

@@ -5,7 +5,7 @@ namespace ApplicationCore.Interfaces.User
 {
     public interface IUserCreate
     {
-        Task<UserDto> CreateUser(UserData data);
+        Task<UserDto> CreateUser(UserData data, string role);
 
     }
 }

@@ -14,9 +14,9 @@ namespace ApplicationCore.Querys.Video
           _videoRepo = videoRepo;
         }
 
-        public async Task<IEnumerable<VideoDto>> ByCourseIdAsync(Guid courseId, CancellationToken cancellationToken)
+        public async Task<IEnumerable<VideoDto>> ByCourseIdAsync(Guid courseId, Guid userId, CancellationToken cancellationToken)
         {
-            return await _videoRepo.ByCourseIdAsync(courseId, cancellationToken);
+            return await _videoRepo.ByCourseIdAsync(courseId, userId, cancellationToken);
         }
     }
 }

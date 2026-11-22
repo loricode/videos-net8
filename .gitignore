@@ -1,0 +1,142 @@
+# =============================================================
+#  SolutionVideos — .gitignore raíz
+#  Cubre Backend (.NET), Frontend (Angular/Node), Docker y secretos.
+# =============================================================
+
+# ---------- Secretos y configuración local (¡nunca subir!) ----------
+.env
+.env.*
+!.env.example
+*.pfx
+*.p12
+*.pem
+*.key
+*.crt
+*.cer
+*.jks
+*.keystore
+secrets/
+**/secrets.json
+**/appsettings.*.local.json
+**/appsettings.Local.json
+**/appsettings.Production.json
+**/appsettings.Staging.json
+**/Properties/PublishProfiles/*.pubxml.user
+**/*.publishsettings
+**/DataProtection-Keys/
+.claude/settings.local.json
+
+# ---------- .NET: binarios, DLL y artefactos de compilación ----------
+[Bb]in/
+[Oo]bj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]64/
+[Ll]og/
+[Ll]ogs/
+artifacts/
+publish/
+out/
+*.dll
+*.exe
+*.pdb
+*.so
+*.dylib
+*.nupkg
+*.snupkg
+*.cache
+project.lock.json
+project.fragment.lock.json
+**/packages/*
+!**/packages/build/
+
+# Pruebas y cobertura
+TestResults/
+[Tt]est[Rr]esult*/
+coverage/
+*.coverage
+*.coveragexml
+*.trx
+coverage*.json
+coverage*.xml
+
+# ---------- Visual Studio / Rider / VS Code ----------
+.vs/
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+*.userprefs
+*.rsuser
+.idea/
+*.sln.iml
+.vscode/*
+!.vscode/extensions.json
+!.vscode/launch.json
+!.vscode/tasks.json
+!.vscode/mcp.json
+*.code-workspace
+*.swp
+*~
+
+# ---------- Node / Angular ----------
+node_modules/
+.trash-*/
+**/dist/
+**/.angular/
+.nx/
+.sass-cache/
+.npm/
+.pnpm-store/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+*.tsbuildinfo
+out-tsc/
+
+# Playwright (E2E)
+**/test-results/
+**/playwright-report/
+**/blob-report/
+**/playwright/.cache/
+**/.auth/
+
+# ---------- Medios y datos locales (videos, imágenes subidas, BD) ----------
+storage/
+uploads/
+media/
+videos-app/
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.webm
+*.m3u8
+*.ts.segment
+*.mdf
+*.ldf
+*.bak
+*.sqlite
+*.sqlite3
+*.db
+*.db-shm
+*.db-wal
+# Excepción: fixtures pequeños de las pruebas E2E
+!Frontend/e2e/fixtures/*.mp4
+
+# ---------- Sistema operativo ----------
+.DS_Store
+Thumbs.db
+ehthumbs.db
+Desktop.ini
+$RECYCLE.BIN/
+
+# ---------- Varios ----------
+*.log
+*.tmp
+*.temp
+*.orig
+*.rej

@@ -16,18 +16,20 @@ namespace InfrastructureCore.JWT
             _options = options.Value;
         }
 
-        public string GenerateToken(Guid userId, string email)
+        public string GenerateToken(Guid userId, string email, IEnumerable<string> roles, string fullName = "")
         {
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_options.Key));
 
             var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
-            var claims = new[]
+            var claims = new List<Claim>
             {
-                new Claim(ClaimTypes.NameIdentifier, userId.ToString()),
-                new Claim(ClaimTypes.Email, email),
+                new(ClaimTypes.NameIdentifier, userId.ToString()),
+                new(ClaimTypes.Email, email),
+                new(ClaimTypes.Name, string.IsNullOrWhiteSpace(fullName) ? email : fullName),
             };
+            claims.AddRange(roles.Select(r => new Claim(ClaimTypes.Role, r)));
 
             var token = new JwtSecurityToken(
                 issuer: _options.Issuer,

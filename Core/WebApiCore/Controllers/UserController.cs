@@ -1,9 +1,11 @@
 ﻿using ApplicationCore.Interfaces.User;
 using ApplicationCore.RequestData.User;
+using DomainCore.Constants;
 using DomainCore.DTOs.User;
 using DomainCore.RequestData.User;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 
 namespace WebApiCore.Controllers
 {
@@ -11,50 +13,53 @@ namespace WebApiCore.Controllers
     [Route("[controller]")]
     public class UserController : ControllerBase
     {
+        private readonly IUserCreate _userCreate;
+        private readonly IUserlogin _userLogin;
+        private readonly IUserValidatetoken _userValidateToken;
 
-        private readonly IUserCreate _iUserCommand;
-
-        private readonly IUserlogin _iUserLoginCommand;
-
-        private readonly IUserValidatetoken _iUserValidatetokenQuery;
-
-        public UserController(IUserCreate iUserCommand, IUserlogin userLoginCommand, IUserValidatetoken userValidatetokenQuery)
+        public UserController(IUserCreate userCreate, IUserlogin userLogin, IUserValidatetoken userValidateToken)
         {
-            _iUserCommand = iUserCommand;
-            _iUserLoginCommand = userLoginCommand;
-            _iUserValidatetokenQuery = userValidatetokenQuery;
+            _userCreate = userCreate;
+            _userLogin = userLogin;
+            _userValidateToken = userValidateToken;
         }
 
+        /// <summary>Alta de otro instructor. Solo un instructor puede crearlo.</summary>
         [HttpPost("CreateUser")]
-        [AllowAnonymous]
-        public async Task<UserDto> CreateUser(UserData data)
+        [Authorize(Roles = Roles.Instructor)]
+        public Task<UserDto> CreateUser(UserData data)
         {
-            return await _iUserCommand.CreateUser(data);
+            return _userCreate.CreateUser(data, Roles.Instructor);
+        }
+
+        /// <summary>Registro público de estudiantes.</summary>
+        [HttpPost("Register")]
+        [AllowAnonymous]
+        [EnableRateLimiting(RateLimitPolicies.Auth)]
+        public Task<UserDto> Register(UserData data)
+        {
+            return _userCreate.CreateUser(data, Roles.Student);
         }
 
         [HttpPost("Login")]
         [AllowAnonymous]
-        public async Task<UserDetailDto> Login(UserLoginData data)
+        [EnableRateLimiting(RateLimitPolicies.Auth)]
+        public Task<UserDetailDto> Login(UserLoginData data)
         {
-            return await _iUserLoginCommand.Login(data);
+            return _userLogin.Login(data);
         }
 
         [HttpGet("Validate")]
-        public async Task<bool> Validate()
+        [Authorize]
+        public Task<bool> Validate()
         {
-
-            var authorizationHeader = Request.Headers.Authorization.FirstOrDefault();
-
-            if (string.IsNullOrEmpty(authorizationHeader))
-            {
-                throw new UnauthorizedAccessException("Token no enviado");
-            }
-            
-            var token = authorizationHeader.Replace("Bearer ", "");
-
-            return await _iUserValidatetokenQuery.Validate(token);
-
+            var token = Request.Headers.Authorization.FirstOrDefault()?.Replace("Bearer ", "") ?? string.Empty;
+            return _userValidateToken.Validate(token);
         }
+    }
 
+    public static class RateLimitPolicies
+    {
+        public const string Auth = "auth";
     }
 }
